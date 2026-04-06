@@ -1,0 +1,216 @@
+import { useEffect, useState, useRef } from "react";
+import Wheel from "../assets/new_wheel_s5ozry.png";
+import './animation.css'
+import aries from "../assets/aries.png";
+import taurus from "../assets/taurus.png";
+import gemini from "../assets/gemini.png";
+import cancer from "../assets/cancer.png";
+import leo from "../assets/leo.png";
+import virgo from "../assets/virgo.png";
+import libra from "../assets/libra.png";
+import scorpio from "../assets/scorpio.png";
+import sagittarius from "../assets/sagittarius.png";
+import capricorn from "../assets/capricorn.png";
+import aquarius from "../assets/aquarius.png";
+import pisces from "../assets/pisces.png";
+
+export default function Animation() {
+    const [rotation, setRotation] = useState(0);
+    const [activeIndex, setActiveIndex] = useState(0);
+    const scrollContainerRef = useRef(null);
+
+    const zodiacs = [
+        {
+            name: "Aries",
+            icon: aries,
+            element: "Fire",
+            traits: "Bold, energetic, fearless",
+            description:
+                "Aries is the pioneer of the zodiac, driven by passion, courage, and a relentless desire to lead. People born under Aries are natural initiators who thrive in fast-paced environments and love taking on new challenges. Their fiery energy makes them confident, competitive, and action-oriented."
+        },
+        {
+            name: "Taurus",
+            icon: taurus,
+            element: "Earth",
+            traits: "Stable, loyal, sensual",
+            description:
+                "Taurus represents stability, comfort, and grounded energy. These individuals value security, loyalty, and the pleasures of life, often surrounding themselves with beauty and luxury. Known for their patience and persistence, Taurus people are reliable in all relationships."
+        },
+        {
+            name: "Gemini",
+            icon: gemini,
+            element: "Air",
+            traits: "Curious, adaptable, witty",
+            description:
+                "Gemini is the communicator of the zodiac, full of curiosity and intellectual energy. These individuals are highly adaptable, quick thinkers, and love engaging in conversations. Their dual nature allows them to see multiple perspectives, making them versatile."
+        },
+        {
+            name: "Cancer",
+            icon: cancer,
+            element: "Water",
+            traits: "Emotional, protective, intuitive",
+            description:
+                "Cancer is deeply connected to emotions, family, and home. These individuals are nurturing, compassionate, and highly intuitive, often sensing the feelings of others without words. They value emotional security and form strong bonds with loved ones."
+        },
+        {
+            name: "Leo",
+            icon: leo,
+            element: "Fire",
+            traits: "Confident, charismatic, bold",
+            description:
+                "Leo is the natural leader and performer of the zodiac, radiating confidence, warmth, and charisma. These individuals love being in the spotlight and have a strong desire to express themselves creatively. They are generous, passionate, and fiercely loyal."
+        },
+        {
+            name: "Virgo",
+            icon: virgo,
+            element: "Earth",
+            traits: "Analytical, practical, perfectionist",
+            description:
+                "Virgo is detail-oriented, thoughtful, and highly analytical. These individuals strive for perfection and take pride in their ability to organize, improve, and refine everything. They are practical problem-solvers who approach life with logic and precision."
+        },
+        {
+            name: "Libra",
+            icon: libra,
+            element: "Air",
+            traits: "Balanced, charming, diplomatic",
+            description:
+                "Libra seeks harmony, balance, and beauty in all aspects of life. These individuals are naturally charming, social, and skilled at maintaining peace. They value fairness and often act as mediators, bringing people together with their diplomatic nature."
+        },
+        {
+            name: "Scorpio",
+            icon: scorpio,
+            element: "Water",
+            traits: "Intense, mysterious, powerful",
+            description:
+                "Scorpio is known for its depth, intensity, and magnetic presence. These individuals are highly passionate and emotionally powerful, often experiencing life on a profound level. They are determined, strategic, and unafraid of transformation."
+        },
+        {
+            name: "Sagittarius",
+            icon: sagittarius,
+            element: "Fire",
+            traits: "Adventurous, optimistic, free-spirited",
+            description:
+                "Sagittarius is the explorer of the zodiac, always seeking knowledge, truth, and new experiences. These individuals are optimistic and driven by a love for freedom. They enjoy exploring different cultures, ideas, and philosophies."
+        },
+        {
+            name: "Capricorn",
+            icon: capricorn,
+            element: "Earth",
+            traits: "Disciplined, ambitious, responsible",
+            description:
+                "Capricorn is focused, disciplined, and goal-oriented. These individuals are driven by ambition and have a strong sense of responsibility. They are excellent planners who value structure, hard work, and long-term success."
+        },
+        {
+            name: "Aquarius",
+            icon: aquarius,
+            element: "Air",
+            traits: "Innovative, independent, visionary",
+            description:
+                "Aquarius is forward-thinking, unique, and highly independent. These individuals are visionaries who enjoy challenging norms and bringing new ideas. They value individuality and often think outside the box."
+        },
+        {
+            name: "Pisces",
+            icon: pisces,
+            element: "Water",
+            traits: "Dreamy, compassionate, artistic",
+            description:
+                "Pisces is deeply intuitive, emotional, and imaginative. These individuals are compassionate souls who connect easily with others on an emotional level. They are often drawn to art, creativity, and spirituality."
+        }
+    ];
+
+    const OFFSET = 15;
+    const MAX_SCROLL = 2000;
+
+    useEffect(() => {
+        let currentScroll = 0;
+        const handleWheel = (e) => {
+            currentScroll += e.deltaY;
+            if (currentScroll < 0) currentScroll = 0;
+            if (currentScroll > MAX_SCROLL) currentScroll = MAX_SCROLL;
+
+            const progress = currentScroll / MAX_SCROLL;
+            const newRotation = progress * 360;
+            setRotation(newRotation);
+
+            let angle = (newRotation + OFFSET) % 360;
+            let index = Math.floor(angle / 30);
+            index = (12 - index) % 12;
+            setActiveIndex(index);
+        };
+
+        window.addEventListener("wheel", handleWheel, { passive: true });
+
+        return () => {
+            window.removeEventListener("wheel", handleWheel);
+        };
+    }, []);
+
+    return (
+        <section className="zodiac-section" id="wheel" ref={scrollContainerRef}>
+            <div className="zodiac-top-decoration">
+                <span className="sbadge">Celestial Guidance</span>
+                <h1 className="stitle">Explore Your <span>Cosmic Path</span></h1>
+            </div>
+
+            <div className="zodiac-container">
+                {/* Information Panel - Left */}
+                <div className="zodiac-info-panel left">
+                    <div className="zodiac-header" key={`name-${activeIndex}`}>
+                        <div className="zodiac-symbol-bg">
+                            <img
+                                src={zodiacs[activeIndex].icon}
+                                alt={zodiacs[activeIndex].name}
+                                className="zodiac-active-icon-mini"
+                            />
+                        </div>
+                        <h2 className="zodiac-name">{zodiacs[activeIndex].name}</h2>
+                        <span className="zodiac-traits">{zodiacs[activeIndex].traits}</span>
+                    </div>
+                </div>
+
+                {/* Central Wheel */}
+                <div className="zodiac-wheel-wrapper">
+                    <div className="zodiac-wheel-outer" style={{ transform: `rotate(${rotation}deg)` }}>
+                        <img src={Wheel} alt="Zodiac Wheel" className="zodiac-wheel-image" />
+                    </div>
+
+                    <div className="zodiac-pointer">
+                        <div className="pointer-glow"></div>
+                    </div>
+
+                    <div className="zodiac-center-display">
+                        <div className="active-zodiac-card" key={`card-${activeIndex}`}>
+                            <div className="card-inner">
+                                <img
+                                    src={zodiacs[activeIndex].icon}
+                                    alt=""
+                                    className="active-icon-large"
+                                />
+                                <div className="zodiac-glow"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                {/* Information Panel - Right */}
+                <div className="zodiac-info-panel right" key={`desc-${activeIndex}`}>
+                    <div className="element-badge">
+                        <span className="element-dot"></span>
+                        {zodiacs[activeIndex].element} Element
+                    </div>
+                    <p className="zodiac-description">
+                        {zodiacs[activeIndex].description}
+                    </p>
+                    <button className="read-more-btn">
+                        Get Detailed Horoscope <span className="arrow">→</span>
+                    </button>
+                </div>
+            </div>
+
+            <div className="scroll-hint">
+                <div className="mouse-wheel"></div>
+                <span>Scroll to Rotate the Heavens</span>
+            </div>
+        </section>
+    );
+}
