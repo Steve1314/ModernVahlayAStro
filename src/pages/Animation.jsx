@@ -14,10 +14,12 @@ import capricorn from "../assets/capricorn.png";
 import aquarius from "../assets/aquarius.png";
 import pisces from "../assets/pisces.png";
 
-export default function Animation() {
+export default function Animation({ onGetDetails }) {
     const [rotation, setRotation] = useState(0);
     const [activeIndex, setActiveIndex] = useState(0);
     const scrollContainerRef = useRef(null);
+    const lastScrollTime = useRef(0);
+    const COOLDOWN = 300; // Reduced for rapid successive scrolls
 
     const zodiacs = [
         {
@@ -118,38 +120,47 @@ export default function Animation() {
         }
     ];
 
-    const OFFSET = 15;
-    const MAX_SCROLL = 2000;
-
     useEffect(() => {
-        let currentScroll = 0;
         const handleWheel = (e) => {
-            currentScroll += e.deltaY;
-            if (currentScroll < 0) currentScroll = 0;
-            if (currentScroll > MAX_SCROLL) currentScroll = MAX_SCROLL;
+            e.preventDefault();
+            if (Date.now() - lastScrollTime.current < COOLDOWN) return;
+            const delta = Math.abs(e.deltaY);
+            if (delta < 15) return;
 
-            const progress = currentScroll / MAX_SCROLL;
-            const newRotation = progress * 360;
-            setRotation(newRotation);
+            // Calculate steps based on intensity (minimum 1, maximum 4)
+            const power = Math.min(Math.max(Math.floor(delta / 100), 1), 4);
 
-            let angle = (newRotation + OFFSET) % 360;
-            let index = Math.floor(angle / 30);
-            index = (12 - index) % 12;
-            setActiveIndex(index);
+            if (e.deltaY > 0) {
+                // Scroll down (Next)
+                const nextIndex = Math.min(activeIndex + power, zodiacs.length - 1);
+                if (nextIndex !== activeIndex) {
+                    const actualSteps = nextIndex - activeIndex;
+                    setActiveIndex(nextIndex);
+                    setRotation(prev => prev - (actualSteps * 30));
+                    lastScrollTime.current = Date.now();
+                }
+            } else if (e.deltaY < 0) {
+                // Scroll up (Prev)
+                const prevIndex = Math.max(activeIndex - power, 0);
+                if (prevIndex !== activeIndex) {
+                    const actualSteps = activeIndex - prevIndex;
+                    setActiveIndex(prevIndex);
+                    setRotation(prev => prev + (actualSteps * 30));
+                    lastScrollTime.current = Date.now();
+                }
+            }
         };
 
-        window.addEventListener("wheel", handleWheel, { passive: true });
-
-        return () => {
-            window.removeEventListener("wheel", handleWheel);
-        };
-    }, []);
+        window.addEventListener("wheel", handleWheel, { passive: false });
+        return () => window.removeEventListener("wheel", handleWheel);
+    }, [activeIndex]);
 
     return (
         <section className="zodiac-section" id="wheel" ref={scrollContainerRef}>
             <div className="zodiac-top-decoration">
-                <span className="sbadge">Celestial Guidance</span>
+
                 <h1 className="stitle">Explore Your <span>Cosmic Path</span></h1>
+                <span className="sbadge">Vahlay Astro</span>
             </div>
 
             <div className="zodiac-container">
@@ -201,7 +212,7 @@ export default function Animation() {
                     <p className="zodiac-description">
                         {zodiacs[activeIndex].description}
                     </p>
-                    <button className="read-more-btn">
+                    <button className="read-more-btn" onClick={onGetDetails}>
                         Get Detailed Horoscope <span className="arrow">→</span>
                     </button>
                 </div>

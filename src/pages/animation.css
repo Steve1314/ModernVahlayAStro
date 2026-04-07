@@ -6,7 +6,8 @@
     position: relative;
     min-height: 100vh;
     padding: 120px 60px;
-    background: radial-gradient(circle at center, #0a0520 0%, #000 100%);
+    /* background: radial-gradient(circle at center, #0a0520 0%, #000 100%); */
+    background-image: url('../assets/bg.jpg');
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -56,7 +57,7 @@
     width: 150px;
     height: 200px;
     object-fit: contain;
-    filter: drop-shadow(0 0 10px rgba(212, 168, 83, 0.4));
+    filter: drop-shadow(0 0 10px rgb(255, 90, 90));
 }
 
 .zodiac-name {
@@ -82,12 +83,12 @@
     align-items: center;
     gap: 10px;
     padding: 8px 18px;
-    background: rgba(255, 255, 255, 0.03);
+    background: rgba(255, 50, 50, 0.473);
     border: 1px solid rgba(255, 255, 255, 0.08);
     border-radius: 30px;
     font-family: var(--ff-heading);
-    font-size: 0.65rem;
-    color: rgba(255, 255, 255, 0.6);
+    font-size: 0.90rem;
+    color: rgb(255, 255, 255);
     letter-spacing: 0.1em;
     text-transform: uppercase;
     margin-bottom: 24px;
@@ -104,8 +105,8 @@
 
 .zodiac-description {
     font-family: var(--ff-body);
-    font-size: 1rem;
-    color: rgba(255, 255, 255, 0.5);
+    font-size: 1.2rem;
+    color: rgb(255, 255, 255);
     line-height: 1.8;
     margin-bottom: 32px;
     animation: fadeSlideIn 0.8s 0.1s cubic-bezier(0.16, 1, 0.3, 1) both;
@@ -116,7 +117,7 @@
     border: none;
     color: var(--gold);
     font-family: var(--ff-heading);
-    font-size: 0.65rem;
+    font-size: 0.90rem;
     text-transform: uppercase;
     letter-spacing: 0.2em;
     cursor: pointer;
@@ -144,15 +145,19 @@
 .zodiac-wheel-outer {
     width: 100%;
     height: 100%;
-    transition: transform 0.2s ease-out;
+    transition: transform 0.8s cubic-bezier(0.2, 1, 0.3, 1);
+    will-change: transform;
+    backface-visibility: hidden;
+    transform-style: preserve-3d;
 }
 
 .zodiac-wheel-image {
     width: 100%;
     height: 100%;
     object-fit: contain;
-    filter: drop-shadow(0 0 50px rgba(0, 0, 0, 0.8));
-    opacity: 0.85;
+    /* Optimized shadow for performance */
+    filter: drop-shadow(0 0 30px rgba(0, 0, 0, 0.6));
+    opacity: 0.9;
 }
 
 .zodiac-pointer {
@@ -214,17 +219,22 @@
 }
 
 .active-icon-large {
-    width: 130px;
-    height: 130px;
+    width: 100px;
+    height: 100px;
     object-fit: contain;
     z-index: 2;
+    /* Reduced blur for better performance */
+    filter: drop-shadow(0 0 15px rgba(212, 168, 83, 0.5));
+    animation: iconPulse 3s ease-in-out infinite;
+    will-change: transform, filter;
 }
 
 .zodiac-glow {
     position: absolute;
     inset: -10px;
-    background: radial-gradient(circle, rgba(212, 168, 83, 0.15) 0%, transparent 70%);
-    animation: rotateGlow 8s linear infinite;
+    background: radial-gradient(circle, rgba(212, 168, 83, 0.1) 0%, transparent 70%);
+    animation: rotateGlow 12s linear infinite;
+    will-change: transform;
 }
 
 /* --- Scroll Hint --- */
@@ -316,6 +326,20 @@
     100% {
         transform: translate(-50%, 8px);
         opacity: 0;
+    }
+}
+
+@keyframes iconPulse {
+
+    0%,
+    100% {
+        filter: drop-shadow(0 0 15px rgba(212, 168, 83, 0.4));
+        transform: scale(1);
+    }
+
+    50% {
+        filter: drop-shadow(0 0 35px rgba(212, 168, 83, 0.8));
+        transform: scale(1.05);
     }
 }
 
