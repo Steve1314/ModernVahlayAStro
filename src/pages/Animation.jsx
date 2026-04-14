@@ -120,9 +120,55 @@ export default function Animation({ onGetDetails }) {
         }
     ];
 
+    const [isInView, setIsInView] = useState(false);
+    const [isHovering, setIsHovering] = useState(false);
+
+    const activeIndexRef = useRef(activeIndex);
+    const isHoveringRef = useRef(isHovering);
+
+    // Keep refs in sync with state to avoid re-attaching the event listener
+    useEffect(() => {
+        activeIndexRef.current = activeIndex;
+    }, [activeIndex]);
+
+    useEffect(() => {
+        isHoveringRef.current = isHovering;
+    }, [isHovering]);
+
+    useEffect(() => {
+        const observer = new IntersectionObserver(
+            ([entry]) => setIsInView(entry.isIntersecting),
+            { threshold: 0.1 } // Immediate capture as it enters view
+        );
+
+        if (scrollContainerRef.current) {
+            observer.observe(scrollContainerRef.current);
+        }
+
+        return () => observer.disconnect();
+    }, []);
+
     useEffect(() => {
         const handleWheel = (e) => {
+            if (!isHoveringRef.current) return; // Don't intercept if we're not hovering on it
+
+            const currentIndex = activeIndexRef.current;
+            const isAtEnd = currentIndex === zodiacs.length - 1;
+            const isAtStart = currentIndex === 0;
+
+            if (e.deltaY > 0 && isAtEnd) {
+                // At the last sign, scrolling down -> Allow natural scroll
+                return;
+            }
+
+            if (e.deltaY < 0 && isAtStart) {
+                // At the first sign, scrolling up -> Allow natural scroll
+                return;
+            }
+
+            // Otherwise, we are interacting with the wheel, so prevent default
             e.preventDefault();
+
             if (Date.now() - lastScrollTime.current < COOLDOWN) return;
             const delta = Math.abs(e.deltaY);
             if (delta < 15) return;
@@ -132,18 +178,18 @@ export default function Animation({ onGetDetails }) {
 
             if (e.deltaY > 0) {
                 // Scroll down (Next)
-                const nextIndex = Math.min(activeIndex + power, zodiacs.length - 1);
-                if (nextIndex !== activeIndex) {
-                    const actualSteps = nextIndex - activeIndex;
+                const nextIndex = Math.min(currentIndex + power, zodiacs.length - 1);
+                if (nextIndex !== currentIndex) {
+                    const actualSteps = nextIndex - currentIndex;
                     setActiveIndex(nextIndex);
                     setRotation(prev => prev - (actualSteps * 30));
                     lastScrollTime.current = Date.now();
                 }
             } else if (e.deltaY < 0) {
                 // Scroll up (Prev)
-                const prevIndex = Math.max(activeIndex - power, 0);
-                if (prevIndex !== activeIndex) {
-                    const actualSteps = activeIndex - prevIndex;
+                const prevIndex = Math.max(currentIndex - power, 0);
+                if (prevIndex !== currentIndex) {
+                    const actualSteps = currentIndex - prevIndex;
                     setActiveIndex(prevIndex);
                     setRotation(prev => prev + (actualSteps * 30));
                     lastScrollTime.current = Date.now();
@@ -153,7 +199,7 @@ export default function Animation({ onGetDetails }) {
 
         window.addEventListener("wheel", handleWheel, { passive: false });
         return () => window.removeEventListener("wheel", handleWheel);
-    }, [activeIndex]);
+    }, []); // Empty dependency array prevents detaching/reattaching!
 
     return (
         <section className="zodiac-section" id="wheel" ref={scrollContainerRef}>
@@ -180,7 +226,11 @@ export default function Animation({ onGetDetails }) {
                 </div>
 
                 {/* Central Wheel */}
-                <div className="zodiac-wheel-wrapper">
+                <div 
+                    className="zodiac-wheel-wrapper"
+                    onMouseEnter={() => setIsHovering(true)}
+                    onMouseLeave={() => setIsHovering(false)}
+                >
                     <div className="zodiac-wheel-outer" style={{ transform: `rotate(${rotation}deg)` }}>
                         <img src={Wheel} alt="Zodiac Wheel" className="zodiac-wheel-image" />
                     </div>

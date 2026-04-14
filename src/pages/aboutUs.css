@@ -1,0 +1,386 @@
+/* ══════════════════════════════════════════
+   VAHLAY ASTRO — Solar System Scroll
+   ══════════════════════════════════════════ */
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+:root {
+    --ff-body: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    --ff-heading: 'Cormorant Garamond', 'Times New Roman', serif;
+    --ff-display: 'Cormorant Garamond', 'Times New Roman', serif;
+    --gold: #d4a853;
+}
+
+body {
+    background-color: #000;
+    overflow-x: hidden;
+}
+
+.solar-system-container {
+    position: relative;
+    background: #000;
+    color: white;
+    font-family: var(--ff-body, sans-serif);
+    overflow-x: hidden;
+}
+
+/* Deep Red Space Background - matching reference dark aesthetic */
+.space-background {
+    position: fixed;
+    inset: 0;
+    background: radial-gradient(ellipse at 70% 30%, rgba(140, 20, 20, 0.35) 0%, transparent 55%),
+        radial-gradient(circle at 30% 85%, rgba(100, 15, 15, 0.25) 0%, transparent 60%),
+        linear-gradient(135deg, #0a0202 0%, #180404 40%, #050101 100%);
+    z-index: 0;
+    pointer-events: none;
+}
+
+/* Subtle stars */
+.space-background::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background-image: radial-gradient(circle, rgba(255, 255, 255, 0.8) 1px, transparent 1px);
+    background-size: 55px 55px;
+    opacity: 0.08;
+    pointer-events: none;
+}
+
+/* ── TRACKS & VIEWPORT ── */
+.scroll-track {
+    position: relative;
+    z-index: 1;
+}
+
+.sticky-viewport {
+    position: sticky;
+    top: 0;
+    height: 100vh;
+    width: 100%;
+    overflow: hidden;
+}
+
+/* ── PLANET PANELS ── */
+.panel {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    pointer-events: none;
+}
+
+.planet-wrapper {
+    position: absolute;
+    width: 300px;
+    height: 300px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+}
+
+@media (min-width: 1200px) {
+    .planet-wrapper {
+        width: 380px;
+        height: 380px;
+    }
+}
+
+@media (max-width: 768px) {
+    .planet-wrapper {
+        width: 240px;
+        height: 240px;
+    }
+}
+
+.planet {
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+    display: block;
+    /* 3D spherical shadowing effect */
+    box-shadow: inset -25px -10px 40px rgba(0, 0, 0, 0.85),
+        inset 12px 8px 30px rgba(255, 255, 255, 0.12),
+        0 0 45px rgba(0, 0, 0, 0.5);
+    background-size: auto 100%;
+    background-repeat: repeat-x;
+    background-position: 0 center;
+}
+
+/* Continuous spherical spinning */
+.spin {
+    animation: spin-planet-bg 24s linear infinite;
+    transform: translateZ(0);
+    will-change: background-position;
+}
+
+@keyframes spin-planet-bg {
+    from {
+        background-position: 0 center;
+    }
+
+    to {
+        background-position: 200% center;
+    }
+}
+
+/* ── PLANET INFO OVERLAY - Exact match to reference image ── */
+.planet-info {
+    position: relative;
+    z-index: 200;
+    text-align: center;
+    pointer-events: auto;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    margin-top: 42vh;
+    padding: 0 24px;
+}
+
+@media (max-width: 768px) {
+    .planet-info {
+        margin-top: 38vh;
+    }
+}
+
+.planet-sub {
+    font-family: var(--ff-heading, serif);
+    font-size: 0.75rem;
+    color: #d4a853;
+    letter-spacing: 0.5em;
+    margin: 0 0 8px 0;
+    text-transform: uppercase;
+    font-weight: 400;
+    text-shadow: 0 2px 10px rgba(0, 0, 0, 0.5);
+}
+
+@media (max-width: 768px) {
+    .planet-sub {
+        font-size: 0.65rem;
+        letter-spacing: 0.4em;
+    }
+}
+
+.planet-title {
+    font-family: var(--ff-display, serif);
+    font-size: 3.8rem;
+    color: #fff;
+    letter-spacing: 0.2em;
+    margin: 0;
+    text-transform: uppercase;
+    text-shadow: 0 4px 25px rgba(0, 0, 0, 0.6);
+    font-weight: 500;
+}
+
+@media (max-width: 768px) {
+    .planet-title {
+        font-size: 2.5rem;
+        letter-spacing: 0.15em;
+    }
+}
+
+@media (max-width: 480px) {
+    .planet-title {
+        font-size: 2rem;
+        letter-spacing: 0.12em;
+    }
+}
+
+.planet-desc {
+    font-size: 0.95rem;
+    color: rgba(255, 255, 255, 0.75);
+    max-width: 380px;
+    line-height: 1.6;
+    margin: 12px 0 24px 0;
+    font-weight: 300;
+}
+
+@media (max-width: 768px) {
+    .planet-desc {
+        font-size: 0.85rem;
+        max-width: 280px;
+        margin: 10px 0 20px 0;
+    }
+}
+
+.planet-btn {
+    background: transparent;
+    border: none;
+    color: #fff;
+    font-family: var(--ff-heading, serif);
+    font-size: 0.7rem;
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+    cursor: pointer;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.35);
+    padding-bottom: 6px;
+    transition: all 0.3s ease;
+    font-weight: 400;
+}
+
+.planet-btn:hover {
+    color: var(--gold, #d4a853);
+    border-bottom-color: var(--gold, #d4a853);
+    letter-spacing: 0.35em;
+}
+
+/* ── LEFT NAVIGATION TRACK - Exact match to reference ── */
+.planets-nav {
+    position: fixed;
+    top: 50%;
+    left: 35px;
+    transform: translateY(-50%);
+    z-index: 300;
+}
+
+@media (max-width: 768px) {
+    .planets-nav {
+        left: 15px;
+        transform: translateY(-50%) scale(0.85);
+        transform-origin: left center;
+    }
+}
+
+@media (max-width: 480px) {
+    .planets-nav {
+        left: 10px;
+        transform: translateY(-50%) scale(0.75);
+        transform-origin: left center;
+    }
+}
+
+.planets-nav ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 28px;
+}
+
+@media (max-width: 768px) {
+    .planets-nav ul {
+        gap: 22px;
+    }
+}
+
+.planets-nav li {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    position: relative;
+    opacity: 0.45;
+    transition: opacity 0.3s ease, transform 0.2s;
+    cursor: pointer;
+}
+
+.planets-nav li:hover {
+    opacity: 0.8;
+    transform: translateX(3px);
+}
+
+.planets-nav li.active {
+    opacity: 1;
+}
+
+.nav-icon {
+    width: 34px;
+    height: 34px;
+    border-radius: 50%;
+    overflow: hidden;
+    position: relative;
+    box-shadow: 0 0 6px rgba(212, 168, 83, 0.4), 0 1px 4px black;
+    background: #0a0a0a;
+}
+
+@media (max-width: 768px) {
+    .nav-icon {
+        width: 28px;
+        height: 28px;
+    }
+}
+
+.nav-icon img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+}
+
+.nav-text-container {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.nav-name {
+    font-family: var(--ff-heading, serif);
+    font-size: 0.7rem;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: #fff;
+    font-weight: 500;
+}
+
+@media (max-width: 768px) {
+    .nav-name {
+        font-size: 0.6rem;
+        letter-spacing: 0.15em;
+    }
+}
+
+.nav-au {
+    font-size: 0.5rem;
+    color: rgba(255, 255, 255, 0.55);
+    letter-spacing: 0.1em;
+    font-family: monospace;
+}
+
+.nav-active-line {
+    position: absolute;
+    left: 44px;
+    top: 50%;
+    width: 28px;
+    height: 1.5px;
+    background: var(--gold, #d4a853);
+    transform: translateY(-50%);
+    box-shadow: 0 0 6px #d4a853;
+}
+
+@media (max-width: 768px) {
+    .nav-active-line {
+        left: 36px;
+        width: 22px;
+    }
+}
+
+/* Panel pointer events */
+.panel {
+    pointer-events: none;
+}
+
+.planet-info {
+    pointer-events: auto;
+}
+
+/* Glow animation for active planet */
+@keyframes subtlePlanetGlow {
+    0% {
+        filter: drop-shadow(0 0 10px rgba(212, 168, 83, 0.15));
+    }
+
+    100% {
+        filter: drop-shadow(0 0 28px rgba(212, 168, 83, 0.3));
+    }
+}
+
+.panel:has(.planet-info[style*="opacity: 1"]) .planet-wrapper {
+    animation: subtlePlanetGlow 3s infinite alternate;
+}

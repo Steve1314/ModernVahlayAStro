@@ -34,9 +34,10 @@
     transition: 0.3s;
 }
 
-.nav-links li a:hover {
+.nav-links li a:hover, .nav-links li a.active {
     color: #fff;
     text-shadow: 0 0 10px #f5c27a;
+    border-bottom: 2px solid #f5c27a;
 }
 
 .cta {

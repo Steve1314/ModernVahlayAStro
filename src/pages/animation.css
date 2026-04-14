@@ -7,12 +7,14 @@
     min-height: 100vh;
     padding: 120px 60px;
     /* background: radial-gradient(circle at center, #0a0520 0%, #000 100%); */
-    background-image: url('../assets/bg.jpg');
+    
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
     overflow: hidden;
+    scroll-snap-align: start;
+    scroll-snap-stop: always;
 }
 
 .zodiac-top-decoration {
